@@ -113,10 +113,10 @@ This system allows admin users to send live notifications to connected users whi
        │              (notifications)         event (notification_events)
        │                       │                      │
        │                       ▼                      │
-       │              5s timer starts                │
+       │              5s timer starts                 │ 
        │                       │                      │
        │                       ▼                      │
-       │              Non-acked sockets        ──────┘
+       │              Non-acked sockets         ──────┘
        │              logged as 'failed'
        │                       │
        ▼                       ▼
