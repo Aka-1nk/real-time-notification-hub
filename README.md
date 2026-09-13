@@ -1,241 +1,61 @@
-\# Real-Time Notification Hub
+# Real-Time Notification Hub
 
+A full-stack real-time notification platform with **persistent MySQL-backed analytics**. Send notifications to connected clients, track delivery/open/failure events per user, and view live metrics — all streamed over Socket.IO.
 
+Built with **React**, **Node.js**, **Express**, **Socket.IO**, and **MySQL**.
 
-A full-stack real-time notification delivery platform built using React, Node.js, Express, and Socket.IO.
+---
 
+## Features
 
+- **Real-time broadcasting** — notifications delivered instantly via Socket.IO
+- **Delivery tracking** — clients ack receipt; backend logs each event to MySQL
+- **Open tracking** — user clicks "Open" → event persisted to SQL
+- **Failure detection** — users who don't ack within 5 seconds are logged as `failed`
+- **Live analytics dashboard** — delivered / opened / failed counts per notification
+- **Full CRUD** — create, read, delete notifications from the dashboard
+- **Persistent storage** — all events survive server restarts (stored in MySQL)
+- **SQL-aggregated analytics** — open rate and failure rate computed via `GROUP BY`, `CASE`, and `LEFT JOIN`
+- **Online users counter** — driven by Socket.IO's connection registry
+- **Modern responsive UI** — React + Tailwind CSS
 
-This system allows admin users to send live notifications to connected users while tracking delivery analytics, opened notifications, and active users in real time.
+---
 
+## Tech Stack
 
+### Frontend
+- React
+- Tailwind CSS
+- Socket.IO Client
 
-\---
+### Backend
+- Node.js
+- Express.js
+- Socket.IO
+- MySQL (`mysql2` driver)
 
+### Database
+- MySQL 8.0+
+- Normalized schema: `notifications`, `notification_events`, `users`
 
+---
 
-\## Features
-
-
-
-\- Real-time notification broadcasting
-
-\- Live analytics dashboard
-
-\- Delivery tracking system
-
-\- Notification open tracking
-
-\- Online users counter
-
-\- Modern responsive UI
-
-\- Socket.IO real-time communication
-
-\- React frontend + Express backend architecture
-
-
-
-\---
-
-
-
-\## Tech Stack
-
-
-
-\### Frontend
-
-\- React
-
-\- Tailwind CSS
-
-\- Socket.IO Client
-
-
-
-\### Backend
-
-\- Node.js
-
-\- Express.js
-
-\- Socket.IO
-
-
-
-\---
-
-
-
-\## Project Architecture
-
-
+## Project Architecture
 
 ```text
-
-Admin Dashboard
-
-&#x20;      ↓
-
-Express + Socket.IO Backend
-
-&#x20;      ↓
-
-Connected Web Clients
-
-```
-
-
-
-\---
-
-
-
-\## How It Works
-
-
-
-1\. Admin sends notification from dashboard
-
-2\. Backend broadcasts notification using Socket.IO
-
-3\. Connected users receive notification instantly
-
-4\. Clients send delivery acknowledgements
-
-5\. Backend updates analytics dashboard in real time
-
-
-
-\---
-
-
-
-\## Installation \& Setup
-
-
-
-\### Clone Repository
-
-
-
-```bash
-
-git clone YOUR\_REPOSITORY\_LINK
-
-```
-
-
-
-\---
-
-
-
-\### Frontend Setup
-
-
-
-```bash
-
-cd frontend
-
-npm install
-
-npm run dev
-
-```
-
-
-
-Frontend runs on:
-
-
-
-```text
-
-http://localhost:5173
-
-```
-
-
-
-\---
-
-
-
-\### Backend Setup
-
-
-
-```bash
-
-cd backend
-
-npm install
-
-node server.js
-
-```
-
-
-
-Backend runs on:
-
-
-
-```text
-
-http://localhost:5000
-
-```
-
-
-
-\---
-
-
-
-\## Screenshots
-
-
-<img width="1758" height="914" alt="image" src="https://github.com/user-attachments/assets/f6285f17-6a56-4538-aab2-d03da175c43a" />
-<img width="1618" height="715" alt="image" src="https://github.com/user-attachments/assets/63a5b705-b985-4ee4-a4a7-6cbcf24ae6f3" />
-
-
-
-
-\---
-
-
-
-\## Future Improvements
-
-
-
-\- MongoDB database integration
-
-\- JWT authentication
-
-\- Firebase push notifications
-
-\- Notification channels/rooms
-
-\- Real-time charts and analytics
-
-\- Docker deployment
-
-\- Redis caching/pub-sub
-
-
-
-\---
-
-
-
-\## Author
-
-
-
-Built by Ak T
-
+┌──────────────────────────┐
+│   Admin Dashboard        │
+│   (React + Tailwind)     │
+└────────────┬─────────────┘
+             │ Socket.IO
+             ▼
+┌──────────────────────────┐
+│  Express + Socket.IO     │
+│  Node.js Backend         │
+└────────────┬─────────────┘
+             │ mysql2
+             ▼
+┌──────────────────────────┐
+│  MySQL                   │
+│  notification_hub DB     │
+└──────────────────────────┘
