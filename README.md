@@ -199,8 +199,9 @@ http://localhost:5000
 \## Screenshots
 
 
+<img width="1758" height="914" alt="image" src="https://github.com/user-attachments/assets/f6285f17-6a56-4538-aab2-d03da175c43a" />
+<img width="1618" height="715" alt="image" src="https://github.com/user-attachments/assets/63a5b705-b985-4ee4-a4a7-6cbcf24ae6f3" />
 
-(Add screenshots here later)
 
 
 
