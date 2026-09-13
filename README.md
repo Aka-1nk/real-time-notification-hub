@@ -58,3 +58,7 @@ Express + Socket.IO Backend
 MySQL (notification_hub)
        ↓
 Connected Web Clients
+
+##Screenshot
+<img width="1917" height="1008" alt="image" src="https://github.com/user-attachments/assets/6bf31969-7e00-4078-a2b8-dd47558733fb" />
+
