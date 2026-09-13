@@ -53,13 +53,86 @@ This system allows admin users to send live notifications to connected users whi
 ## Project Architecture
 
 ```text
-Admin Dashboard
-       ↓
-Express + Socket.IO Backend
-       ↓
-MySQL (notification_hub)
-       ↓
-Connected Web Clients
+┌──────────────────────────────────────────────────────────────────┐
+│                        CLIENT LAYER                              │
+│                                                                  │
+│   ┌─────────────────────────────────────────────────────────┐    │
+│   │  React + Tailwind Dashboard (localhost:5173)            │    │
+│   │  ─────────────────────────────────────────              │    │
+│   │  • Send notification panel                              │    │
+│   │  • Live notification feed                               │    │
+│   │  • Delivered / Opened / Failed counters                 │    │
+│   │  • Online users indicator                               │    │
+│   └─────────────────────────────────────────────────────────┘    │
+│                │                                 ▲               │
+│                │ Socket.IO emit                  │ Socket.IO push│
+│                ▼                                 │               │
+└──────────────────────────────────────────────────────────────────┘
+                 │                                 │
+                 │                                 │
+┌────────────────▼─────────────────────────────────┴───────────────┐
+│                     APPLICATION LAYER                            │
+│                                                                  │
+│   ┌─────────────────────────────────────────────────────────┐    │
+│   │  Node.js + Express + Socket.IO (localhost:5000)         │    │
+│   │  ─────────────────────────────────────────              │    │
+│   │  • Socket event handlers (send / ack / open / delete)   │    │
+│   │  • Delivery timeout tracker (5s window)                 │    │
+│   │  • REST endpoints for analytics                         │    │
+│   │    – GET /analytics/overview                            │    │
+│   │    – GET /analytics/per-notification                    │    │
+│   └─────────────────────────────────────────────────────────┘    │
+│                │                                 ▲               │
+│                │ SQL (INSERT / SELECT)           │ Results       │
+│                ▼                                 │               │
+└──────────────────────────────────────────────────────────────────┘
+                 │                                 │
+                 │                                 │
+┌────────────────▼─────────────────────────────────┴───────────────┐
+│                      DATA LAYER                                  │
+│                                                                  │
+│   ┌─────────────────────────────────────────────────────────┐    │
+│   │  MySQL — notification_hub                               │    │
+│   │  ─────────────────────────────────────────              │    │
+│   │  • notifications        (one row per send)              │    │
+│   │  • notification_events  (delivered / opened / failed)   │    │
+│   │  • users                (segment metadata)              │    │
+│   └─────────────────────────────────────────────────────────┘    │
+│                                                                  │
+└──────────────────────────────────────────────────────────────────┘
+```
 
+### Data Flow
 
+```text
+  Admin sends           Backend captures        Client receives
+  notification    ──►   connected sockets  ──►  and sends ack
+       │                       │                      │
+       │                       ▼                      ▼
+       │              Inserts into MySQL      Inserts delivered
+       │              (notifications)         event (notification_events)
+       │                       │                      │
+       │                       ▼                      │
+       │              5s timer starts                │
+       │                       │                      │
+       │                       ▼                      │
+       │              Non-acked sockets        ──────┘
+       │              logged as 'failed'
+       │                       │
+       ▼                       ▼
+  SQL aggregation recomputes analytics
+       │
+       ▼
+  Pushed to all dashboards via Socket.IO
+```
 
+### Key Design Decisions
+
+| Decision | Why |
+|----------|-----|
+| **Socket.IO for real-time** | WebSocket fallback, auto-reconnect, and event-based API simplify live updates |
+| **MySQL over in-memory storage** | Enables persistence across restarts and SQL-driven analytics |
+| **Normalized `notification_events` table** | One row per (notification, user, event_type) keeps the schema clean and scalable |
+| **ENUM for `event_type`** | Small fixed set of values → no need for a separate lookup table |
+| **`ON DELETE CASCADE`** | Guarantees events are cleaned up when a notification is deleted — no orphans |
+| **REST endpoints for analytics** | Allows external tools (dashboards, scripts) to fetch aggregated metrics without a socket connection |
