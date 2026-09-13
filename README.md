@@ -47,7 +47,8 @@ This system allows admin users to send live notifications to connected users whi
 - MySQL (`mysql2` driver)
 
 ---
-
+##Screenshot
+<img width="1917" height="1008" alt="image" src="https://github.com/user-attachments/assets/6bf31969-7e00-4078-a2b8-dd47558733fb" />
 ## Project Architecture
 
 ```text
@@ -59,6 +60,5 @@ MySQL (notification_hub)
        ↓
 Connected Web Clients
 
-##Screenshot
-<img width="1917" height="1008" alt="image" src="https://github.com/user-attachments/assets/6bf31969-7e00-4078-a2b8-dd47558733fb" />
+
 
